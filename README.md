@@ -13,13 +13,14 @@ $ $FLINK_HOME/bin/flink run job.jar
 With job.jar the uber jar that has Flink Job
 ## Local development with maven
 1. Set up the maven project with flink quickstart archetype
-```shell
-$ mvn archetype:generate                               \
-  -DarchetypeGroupId=org.apache.flink              \
-  -DarchetypeArtifactId=flink-quickstart-java      \
-  -DarchetypeVersion=1.12.0
-```
-. Make sure the main class is included with the shaded plugin in pom.xml
-
+    ```shell
+    $ mvn archetype:generate                               \
+      -DarchetypeGroupId=org.apache.flink              \
+      -DarchetypeArtifactId=flink-quickstart-java      \
+      -DarchetypeVersion=1.12.0
+    ```
+    Make sure the main class is included with the shaded plugin in pom.xml
+2. Development with IntelliJ
+Make sure to include Flink dependencies as `compile` scope (the default scope with maven archetype is `provided` which is suitable to run with Flink runtime).
 # References
 - [Project Configuration](https://ci.apache.org/projects/flink/flink-docs-stable/dev/project-configuration.html)
