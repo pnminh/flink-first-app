@@ -15,6 +15,44 @@ public class MapExample {
     public static void main(String... args) throws Exception {
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         //Load data
+        mapUsingTuple(env);
+        mapUsingPojo(env);
+        flatMapUsingPojo(env);
+    }
+
+    private static void flatMapUsingPojo(ExecutionEnvironment env) throws Exception {
+        DataSet<OrderModel> pojoInput = env.readCsvFile(FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
+                .pojoType(OrderModel.class, "id", "customer", "product", "date", "quantity", "rate", "tags");
+        DataSet<OrderModel> orderWithTagListModelDataSet =
+                pojoInput.flatMap(
+                        new FlatMapFunction<OrderModel, OrderModel>() {
+                            @Override
+                            public void flatMap(OrderModel orderInput, Collector<OrderModel> collector) throws Exception {
+                                for (String tag : orderInput.getTags().split(":")) {
+                                    OrderModel outputOrder = OrderModelMapper.INSTANCE.orderToOrder(orderInput);
+                                    outputOrder.setTags(tag);
+                                    collector.collect(outputOrder);
+                                }
+                            }
+                        }
+                );
+        orderWithTagListModelDataSet.first(5).print();
+    }
+
+    private static DataSet<OrderModel> mapUsingPojo(ExecutionEnvironment env) {
+        DataSet<OrderModel> pojoInput = env.readCsvFile(FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
+                .pojoType(OrderModel.class, "id", "customer", "product", "date", "quantity", "rate", "tags");
+        DataSet<OrderWithTotalModel> pojoOutput = pojoInput.map((inputOrder -> {
+            OrderWithTotalModel outputOrder = OrderModelMapper.INSTANCE.orderToOrderWithTotal(inputOrder);
+            outputOrder.setTotal(inputOrder.getRate() * inputOrder.getQuantity());
+            return outputOrder;
+        }
+        ));
+        //pojoOutput.first(5).print();
+        return pojoInput;
+    }
+
+    private static void mapUsingTuple(ExecutionEnvironment env) {
         DataSet<Tuple7<Integer, String, String, String, Integer, Double, String>> input = env
                 .readCsvFile(FILE_INPUT)
                 .ignoreFirstLine()
@@ -32,29 +70,5 @@ public class MapExample {
                             }
                         });
         //output.first(5).print();
-
-        DataSet<OrderModel> pojoInput = env.readCsvFile(FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
-                .pojoType(OrderModel.class, "id", "customer", "product", "date", "quantity", "rate", "tags");
-        DataSet<OrderWithTotalModel> pojoOutput = pojoInput.map((inputOrder -> {
-            OrderWithTotalModel outputOrder = OrderModelMapper.INSTANCE.orderToOrderWithTotal(inputOrder);
-            outputOrder.setTotal(inputOrder.getRate() * inputOrder.getQuantity());
-            return outputOrder;
-        }
-        ));
-        //pojoOutput.first(5).print();
-        DataSet<OrderModel> orderWithTagListModelDataSet =
-                pojoInput.flatMap(
-                        new FlatMapFunction<OrderModel, OrderModel>() {
-                            @Override
-                            public void flatMap(OrderModel orderInput, Collector<OrderModel> collector) throws Exception {
-                                for (String tag : orderInput.getTags().split(":")) {
-                                    OrderModel outputOrder = OrderModelMapper.INSTANCE.orderToOrder(orderInput);
-                                    outputOrder.setTags(tag);
-                                    collector.collect(outputOrder);
-                                }
-                            }
-                        }
-                );
-        orderWithTagListModelDataSet.first(5).print();
     }
 }
