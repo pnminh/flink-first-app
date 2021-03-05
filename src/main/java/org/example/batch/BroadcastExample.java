@@ -1,4 +1,4 @@
-package org.example;
+package org.example.batch;
 
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.DataSet;
@@ -10,11 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BroadcastExample {
-    public static final String FILE_INPUT = "/home/minhpn/Documents/workspace/bigdata/flink/flink-first-app/src/main/resources/sales_orders.csv";
 
     public static void main(String[] args) throws Exception {
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-        DataSet<OrderModel> input = env.readCsvFile(FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
+        DataSet<OrderModel> input = env.readCsvFile(Constants.SALES_ORDERS_FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
                 .pojoType(OrderModel.class, "id", "customer", "product", "date", "quantity", "rate", "tags");
         Map<String,Double> productDiscounts = new HashMap<>();
         productDiscounts.put("Mouse", 0.05);

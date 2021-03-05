@@ -1,4 +1,4 @@
-package org.example;
+package org.example.batch;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
@@ -9,11 +9,10 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 
 public class ReduceExample {
-    public static final String FILE_INPUT = "/home/minhpn/Documents/workspace/bigdata/flink/flink-first-app/src/main/resources/sales_orders.csv";
 
     public static void main(String[] args) throws Exception {
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-        DataSet<OrderModel> pojoInput = env.readCsvFile(FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
+        DataSet<OrderModel> pojoInput = env.readCsvFile(Constants.SALES_ORDERS_FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
                 .pojoType(OrderModel.class, "id", "customer", "product", "date", "quantity", "rate", "tags");
         //print total charge for each customer
         pojoInput.map(new MapFunction<OrderModel, Tuple2<String, Double>>() {

@@ -238,13 +238,13 @@ under the License.
         <profile>
             <id>stream</id>
             <properties>
-                <main-class>org.example.StreamingJob</main-class>
+                <main-class>org.example.batch.StreamingJob</main-class>
             </properties>
         </profile>
         <profile>
             <id>batch</id>
             <properties>
-                <main-class>org.example.BatchJob</main-class>
+                <main-class>org.example.batch.BatchJob</main-class>
             </properties>
         </profile>
         <profile>

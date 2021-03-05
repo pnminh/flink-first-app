@@ -1,7 +1,6 @@
-package org.example;
+package org.example.batch;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.batch;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -10,7 +10,6 @@ import org.apache.flink.util.Collector;
 
 public class MapExample {
 
-    public static final String FILE_INPUT = "/home/minhpn/Documents/workspace/bigdata/flink/flink-first-app/src/main/resources/sales_orders.csv";
 
     public static void main(String... args) throws Exception {
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -21,7 +20,7 @@ public class MapExample {
     }
 
     private static void flatMapUsingPojo(ExecutionEnvironment env) throws Exception {
-        DataSet<OrderModel> pojoInput = env.readCsvFile(FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
+        DataSet<OrderModel> pojoInput = env.readCsvFile(Constants.SALES_ORDERS_FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
                 .pojoType(OrderModel.class, "id", "customer", "product", "date", "quantity", "rate", "tags");
         DataSet<OrderModel> orderWithTagListModelDataSet =
                 pojoInput.flatMap(
@@ -40,7 +39,7 @@ public class MapExample {
     }
 
     private static DataSet<OrderModel> mapUsingPojo(ExecutionEnvironment env) {
-        DataSet<OrderModel> pojoInput = env.readCsvFile(FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
+        DataSet<OrderModel> pojoInput = env.readCsvFile(Constants.SALES_ORDERS_FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
                 .pojoType(OrderModel.class, "id", "customer", "product", "date", "quantity", "rate", "tags");
         DataSet<OrderWithTotalModel> pojoOutput = pojoInput.map((inputOrder -> {
             OrderWithTotalModel outputOrder = OrderModelMapper.INSTANCE.orderToOrderWithTotal(inputOrder);
@@ -54,7 +53,7 @@ public class MapExample {
 
     private static void mapUsingTuple(ExecutionEnvironment env) {
         DataSet<Tuple7<Integer, String, String, String, Integer, Double, String>> input = env
-                .readCsvFile(FILE_INPUT)
+                .readCsvFile(Constants.SALES_ORDERS_FILE_INPUT)
                 .ignoreFirstLine()
                 .parseQuotedStrings('\"')//remove " from the input string
                 .types(Integer.class, String.class, String.class, String.class,

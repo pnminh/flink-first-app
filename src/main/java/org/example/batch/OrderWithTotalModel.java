@@ -1,9 +1,9 @@
-package org.example;
+package org.example.batch;
 
 import lombok.Data;
 
 @Data
-public class OrderModel {
+public class OrderWithTotalModel {
     Integer id;
     String customer;
     String product;
@@ -11,4 +11,5 @@ public class OrderModel {
     Integer quantity;
     Double rate;
     String tags;
+    Double total;
 }
