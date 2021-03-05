@@ -1,10 +1,12 @@
 package org.example;
 
+import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.tuple.Tuple8;
+import org.apache.flink.util.Collector;
 
 public class MapExample {
 
@@ -30,6 +32,7 @@ public class MapExample {
                             }
                         });
         //output.first(5).print();
+
         DataSet<OrderModel> pojoInput = env.readCsvFile(FILE_INPUT).ignoreFirstLine().parseQuotedStrings('\"')
                 .pojoType(OrderModel.class, "id", "customer", "product", "date", "quantity", "rate", "tags");
         DataSet<OrderWithTotalModel> pojoOutput = pojoInput.map((inputOrder -> {
@@ -38,6 +41,20 @@ public class MapExample {
             return outputOrder;
         }
         ));
-        pojoOutput.first(5).print();
+        //pojoOutput.first(5).print();
+        DataSet<OrderModel> orderWithTagListModelDataSet =
+                pojoInput.flatMap(
+                        new FlatMapFunction<OrderModel, OrderModel>() {
+                            @Override
+                            public void flatMap(OrderModel orderInput, Collector<OrderModel> collector) throws Exception {
+                                for (String tag : orderInput.getTags().split(":")) {
+                                    OrderModel outputOrder = OrderModelMapper.INSTANCE.orderToOrder(orderInput);
+                                    outputOrder.setTags(tag);
+                                    collector.collect(outputOrder);
+                                }
+                            }
+                        }
+                );
+        orderWithTagListModelDataSet.first(5).print();
     }
 }
