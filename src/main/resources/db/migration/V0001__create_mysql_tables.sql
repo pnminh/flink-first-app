@@ -1,6 +1,6 @@
 CREATE TABLE `customer_summary` (
-  `Customer` text DEFAULT NULL,
-  `Quantity` int(11) DEFAULT NULL
+  `Customer` VARCHAR(8) DEFAULT NULL,
+  `Total_Value` NUMERIC(11,2) DEFAULT NULL
 );
 
 CREATE TABLE sales_orders(
