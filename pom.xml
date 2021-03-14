@@ -253,7 +253,7 @@ under the License.
         <profile>
             <id>stream</id>
             <properties>
-                <main-class>org.example.batch.StreamingJob</main-class>
+                <main-class>org.example.stream.StreamingJob</main-class>
             </properties>
         </profile>
         <profile>
